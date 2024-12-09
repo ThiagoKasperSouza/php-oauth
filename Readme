@@ -1,0 +1,8 @@
+Docs das credenciais
+https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow?hl=pt-br
+
+criar um ambiente local do composer
+curl -sS https://getcomposer.org/installer | php
+
+rodar:
+php -S localhost:8000

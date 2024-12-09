@@ -1,0 +1,5 @@
+{
+    "name": "t/php-oauth",
+    "license": "MIT",
+    "require": {}
+}
