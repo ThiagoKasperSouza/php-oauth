@@ -10,9 +10,6 @@ $requestUri = strtok($requestUri, '?');
 
 $page='login';
 
-
-
-
 function load($path): void
 {
     $lines = file($path . '/.env');
@@ -27,8 +24,6 @@ function load($path): void
     }
 }
 load(__DIR__);
-
-
 
 // ROUTER
 switch ($requestUri) {
@@ -46,7 +41,7 @@ switch ($requestUri) {
         break;
 }
 
-$metadata = http($metadata_url);
+$metadata = http(getenv("METADATA_URI"));
 
 
 // fluxo pos login (tem code, pode pegar infos)
@@ -62,9 +57,9 @@ if(isset($_GET['code'])) {
     $response = http($metadata->token_endpoint, [
     'grant_type' => 'authorization_code',
     'code' => $_GET['code'],
-    'redirect_uri' => $redirect_uri,
-    'client_id' => $client_id,
-    'client_secret' => $client_secret,
+    'redirect_uri' => getenv("REDIRECT_URI"),
+    'client_id' => getenv("CLIENT_ID"),
+    'client_secret' => getenv("CLIENT_SECRET"),
     'code_verifier' => $_SESSION['code_verifier'],
 
     ]);
@@ -91,8 +86,8 @@ if(isset($_POST['form_button'])) {
   
     $authorize_url = $metadata->authorization_endpoint.'?'.http_build_query([
       'response_type' => 'code',
-      'client_id' => $client_id,
-      'redirect_uri' => $redirect_uri,
+      'client_id' => getenv("CLIENT_ID"),
+      'redirect_uri' => getenv("REDIRECT_URI"),
       'state' => $_SESSION['state'],
       'scope' => 'openid profile email',
       'code_challenge' => $code_challenge,
