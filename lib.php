@@ -10,6 +10,20 @@ $requestUri = strtok($requestUri, '?');
 
 $page='login';
 
+function base64_urlencode($string) {
+  return rtrim(strtr(base64_encode($string), '+/', '-_'), '=');
+}
+
+
+function http($url, $params=false) {
+  $ch = curl_init($url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  if($params)
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+  return json_decode(curl_exec($ch));
+
+}
+
 function load($path): void
 {
     $lines = file($path . '/.env');
@@ -102,20 +116,57 @@ if(isset($_POST['logout_button'])) {
     unset($_SESSION['username']);
     unset($_SESSION['sub']);
     header('Location: /');
-  }
-  
-
-function base64_urlencode($string) {
-  return rtrim(strtr(base64_encode($string), '+/', '-_'), '=');
 }
 
+// Fluxo pg
+if(isset($_POST['form_connection'])) {
+    $name = $_SESSION['name'];
+    $email = $_SESSION['email'];
+    $host = $_POST['hostInput'];
+    $user = $_POST['userInput'];
+    $password = $_POST['pwdInput'];
 
-function http($url, $params=false) {
-  $ch = curl_init($url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  if($params)
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-  return json_decode(curl_exec($ch));
+    $conString = "host=$host dbname=meu_db user=$user password=$password";
+    $conexao = pg_connect($conString) or
+    die ("Não foi possível conectar ao servidor PostGreSQL");
+    //caso a conexão seja efetuada com sucesso, exibe uma mensagem ao usuário
+    print"<script>alert('Conexão efetuada com sucesso!!')</script>";
+    $_SESSION['name'] = $name;
+    $_SESSION['email'] = $email ;
+} 
+//     try {
 
-}
+//         // Estabelecer a conexão
+//         $pdo = new PDO($dsn, $user, $password);
+//         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+//         echo "<script>alert('Conexão estabelecida com sucesso!')</>";
+
+
+//         // Aqui você pode adicionar a consulta para listar as tabelas, por exemplo
+
+//         $sql = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'";
+//         $stmt = $pdo->prepare($sql);
+//         $stmt->execute();
+//         $tabelas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+//         echo "Tabelas no banco de dados:<br>";
+
+//         foreach ($tabelas as $tabela) {
+
+//             echo $tabela['tablename'] . "<br>";
+
+//         }
+
+//     } catch (PDOException $e) {
+
+//         echo "Erro na conexão: " . $e->getMessage();
+
+//     }
+// }
+
+
+
+
 ?>

@@ -51,3 +51,9 @@ INSERT INTO USERS (NAME,EMAIL) VALUES
 \dt
 
 SELECT * FROM users;
+
+### credenciais para teste:
+
+dsn pgsql:host=ip:5432;dbname=meu_db
+postgres
+mysecretpassword
