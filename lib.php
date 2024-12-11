@@ -45,11 +45,12 @@ switch ($requestUri) {
     case '/login':
         $page = 'login';
         break;
-
-    case '/home':
-        $page = 'home'; // Página inicial
+    case '/settings':
+        $page = 'settings'; // Página inicial
         break;
-
+    case '/dashboard':
+        $page = 'dashboard'; // Página inicial
+        break;
     default:
         $page = 'login'; // Página padrão em caso de erro
         break;
@@ -87,8 +88,8 @@ if(isset($_GET['code'])) {
         $_SESSION['sub'] = $userinfo->sub;
         $_SESSION['email'] = $userinfo->email; 
         $_SESSION['name'] = $userinfo->name; 
-        $_SESSION['profile'] = $userinfo;
-        header('Location: /home');
+        $_SESSION['picture'] = $userinfo->picture; 
+        header('Location: /settings');
     }
 }
 
@@ -113,8 +114,10 @@ if(isset($_POST['form_button'])) {
 
 // Fluxo logout
 if(isset($_POST['logout_button'])) {
-    unset($_SESSION['username']);
+    unset($_SESSION['name']);
+    unset($_SESSION['email']);
     unset($_SESSION['sub']);
+    unset($_SESSION['picture']);
     header('Location: /');
 }
 
@@ -122,49 +125,22 @@ if(isset($_POST['logout_button'])) {
 if(isset($_POST['form_connection'])) {
     $name = $_SESSION['name'];
     $email = $_SESSION['email'];
+    $picture = $_SESSION['picture'];
     $host = $_POST['hostInput'];
     $user = $_POST['userInput'];
     $password = $_POST['pwdInput'];
 
-    $conString = "host=$host dbname=meu_db user=$user password=$password";
-    $conexao = pg_connect($conString) or
-    die ("Não foi possível conectar ao servidor PostGreSQL");
-    //caso a conexão seja efetuada com sucesso, exibe uma mensagem ao usuário
-    print"<script>alert('Conexão efetuada com sucesso!!')</script>";
-    $_SESSION['name'] = $name;
-    $_SESSION['email'] = $email ;
+    $conn = pg_connect("host=$host dbname=meu_db user=$user password=$password");
+    if(!$conn) die ("Não foi possível conectar ao servidor PostGreSQL");
+    else {
+        // print"<script>alert('Conexão efetuada com sucesso!!')</script>";
+        $_SESSION['name'] = $name;
+        $_SESSION['email'] = $email;
+        $_SESSION['picture'] = $picture;
+        header('Location: /dashboard');
+    }
+   
 } 
-//     try {
-
-//         // Estabelecer a conexão
-//         $pdo = new PDO($dsn, $user, $password);
-//         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-//         echo "<script>alert('Conexão estabelecida com sucesso!')</>";
-
-
-//         // Aqui você pode adicionar a consulta para listar as tabelas, por exemplo
-
-//         $sql = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'";
-//         $stmt = $pdo->prepare($sql);
-//         $stmt->execute();
-//         $tabelas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-//         echo "Tabelas no banco de dados:<br>";
-
-//         foreach ($tabelas as $tabela) {
-
-//             echo $tabela['tablename'] . "<br>";
-
-//         }
-
-//     } catch (PDOException $e) {
-
-//         echo "Erro na conexão: " . $e->getMessage();
-
-//     }
-// }
 
 
 

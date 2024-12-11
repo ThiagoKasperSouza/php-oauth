@@ -25,6 +25,7 @@
 
   </form>
 </div>
+<?php include './pages/components/nav_dropdown.php' ?>
 <style>
   .conContainer {
     margin: 2em;
