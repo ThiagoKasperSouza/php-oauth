@@ -64,8 +64,8 @@ function fill_sidebar_items() {
             </button>
             <div class="collapse" id="orders-collapse" style="">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="?content=new" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New</a></li>
-                    <li><a href="?content=list" class="link-body-emphasis d-inline-flex text-decoration-none rounded">List</a></li>
+                    <li><a href="?path='.$row["table_name"].'&content=new" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New</a></li>
+                    <li><a href="?path='.$row["table_name"].'&content=list" class="link-body-emphasis d-inline-flex text-decoration-none rounded">List</a></li>
                 </ul>
             </div>';
         // echo $row['table_name'] . "<br>";
