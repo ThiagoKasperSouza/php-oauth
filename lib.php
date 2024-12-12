@@ -1,7 +1,6 @@
 <?php
 
 session_start();
-
 // Captura a URI da requisição
 $requestUri = $_SERVER['REQUEST_URI'];
 
@@ -10,20 +9,10 @@ $requestUri = strtok($requestUri, '?');
 
 $page='login';
 
-function base64_urlencode($string) {
-  return rtrim(strtr(base64_encode($string), '+/', '-_'), '=');
-}
 
-
-function http($url, $params=false) {
-  $ch = curl_init($url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  if($params)
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-  return json_decode(curl_exec($ch));
-
-}
-
+/**
+ * ENV
+ */
 function load($path): void
 {
     $lines = file($path . '/.env');
@@ -39,7 +28,63 @@ function load($path): void
 }
 load(__DIR__);
 
-// ROUTER
+
+
+/**
+ * BANCO DE DADOS
+ */
+function getConnection($host, $dbname, $user, $password) {
+    $conn = pg_connect("host=$host dbname=$dbname user=$user password=$password");
+    if (!$conn) {
+        die("Error connecting to PostgreSQL: " . pg_last_error());
+    }
+    return $conn;
+}
+
+
+function fill_sidebar_items() {
+    $conn =getConnection($_SESSION['host'], "meu_db", $_SESSION['user'], $_SESSION['pwd']);
+    $result = pg_query($conn, "SELECT * FROM information_schema.tables
+     WHERE table_schema = 'public'
+     AND table_type = 'BASE TABLE';");
+    // Verificar se a consulta foi executada com sucesso
+    if (!$result) {
+        echo "Erro ao executar a consulta: " . pg_last_error($conn);
+        exit;
+    }
+
+    // Exibir os resultados
+    while ($row = pg_fetch_assoc($result)) {
+        echo '<li class="mb-1">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-table" viewBox="0 0 16 16">
+                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z"/>
+                </svg>
+                <div style="padding: 0 0.5em">' .$row["table_name"].'</div>
+            </button>
+            <div class="collapse" id="orders-collapse" style="">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="?content=new" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New</a></li>
+                    <li><a href="?content=list" class="link-body-emphasis d-inline-flex text-decoration-none rounded">List</a></li>
+                </ul>
+            </div>';
+        // echo $row['table_name'] . "<br>";
+    }
+
+    // Fechar a conexão
+    pg_close($conn);
+}
+
+/**
+ * BANCO DE DADOS
+ */
+
+
+/** 
+* ROUTER
+*/
+
+
 switch ($requestUri) {
 
     case '/login':
@@ -55,6 +100,30 @@ switch ($requestUri) {
         $page = 'login'; // Página padrão em caso de erro
         break;
 }
+/** 
+* ROUTER
+*/
+
+
+/**
+ * OAUTH
+ */
+
+
+function base64_urlencode($string) {
+  return rtrim(strtr(base64_encode($string), '+/', '-_'), '=');
+}
+
+
+function http($url, $params=false) {
+  $ch = curl_init($url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  if($params)
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+  return json_decode(curl_exec($ch));
+
+}
+
 
 $metadata = http(getenv("METADATA_URI"));
 
@@ -93,6 +162,7 @@ if(isset($_GET['code'])) {
     }
 }
 
+
 // Fluxo login
 if(isset($_POST['form_button'])) {
     $_SESSION['state'] = bin2hex(random_bytes(5));
@@ -118,7 +188,10 @@ if(isset($_POST['logout_button'])) {
     unset($_SESSION['email']);
     unset($_SESSION['sub']);
     unset($_SESSION['picture']);
-    header('Location: /');
+    unset($_SESSION['host']);
+    unset($_SESSION['user']);
+    unset($_SESSION['pwd']);
+    header('Location: /login');
 }
 
 // Fluxo pg
@@ -126,23 +199,20 @@ if(isset($_POST['form_connection'])) {
     $name = $_SESSION['name'];
     $email = $_SESSION['email'];
     $picture = $_SESSION['picture'];
-    $host = $_POST['hostInput'];
-    $user = $_POST['userInput'];
-    $password = $_POST['pwdInput'];
+    // Store connection details in session
 
-    $conn = pg_connect("host=$host dbname=meu_db user=$user password=$password");
-    if(!$conn) die ("Não foi possível conectar ao servidor PostGreSQL");
-    else {
-        // print"<script>alert('Conexão efetuada com sucesso!!')</script>";
-        $_SESSION['name'] = $name;
-        $_SESSION['email'] = $email;
-        $_SESSION['picture'] = $picture;
-        header('Location: /dashboard');
-    }
+    header('Location: /dashboard');
+    $_SESSION['host'] = $_POST['hostInput'];
+    $_SESSION['user'] = $_POST['userInput'];
+    $_SESSION['pwd'] =  $_POST['pwdInput'];
+    $_SESSION['name'] = $name;
+    $_SESSION['email'] = $email;
+    $_SESSION['picture'] = $picture;
    
 } 
 
-
-
+/**
+ * OAUTH
+ */
 
 ?>
