@@ -46,10 +46,10 @@ switch ($requestUri) {
         $page = 'login';
         break;
     case '/settings':
-        $page = 'settings'; // Página inicial
+        $page = 'settings';
         break;
     case '/dashboard':
-        $page = 'dashboard'; // Página inicial
+        $page = 'dashboard';
         break;
     default:
         $page = 'login'; // Página padrão em caso de erro

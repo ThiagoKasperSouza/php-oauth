@@ -46,7 +46,6 @@
         <strong><?php echo $_SESSION['name']?></strong>
       </a>
       <ul class="dropdown-menu text-small shadow">
-        <li><a class="dropdown-item" href="#">Profile</a></li>
         <li><a class="dropdown-item" href="/settings">Settings</a></li>
         <li><a class="dropdown-item" href="/logout">Sign out</a></li>
       </ul>
