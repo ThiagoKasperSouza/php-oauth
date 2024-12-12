@@ -44,14 +44,26 @@ function getConnection($host, $dbname, $user, $password) {
 
 function fill_sidebar_items() {
     $conn =getConnection($_SESSION['host'], "meu_db", $_SESSION['user'], $_SESSION['pwd']);
-    $result = pg_query($conn, "SELECT * FROM information_schema.tables
-     WHERE table_schema = 'public'
-     AND table_type = 'BASE TABLE';");
-    // Verificar se a consulta foi executada com sucesso
+    
+    // Preparar a consulta
+    $query = "SELECT * FROM information_schema.tables
+    WHERE table_schema = 'public'
+    AND table_type = 'BASE TABLE';";
+
+    $stmt = pg_prepare($conn, "qut", $query);
+    if (!$stmt) {
+        echo "Erro ao preparar a consulta: " . pg_last_error($conn);
+        exit;
+    }
+
+
+    // Executar a consulta
+    $result = pg_execute($conn, "qut", array());
     if (!$result) {
         echo "Erro ao executar a consulta: " . pg_last_error($conn);
         exit;
     }
+
 
     // Exibir os resultados
     while ($row = pg_fetch_assoc($result)) {
@@ -74,6 +86,33 @@ function fill_sidebar_items() {
     // Fechar a conexão
     pg_close($conn);
 }
+
+
+if (isset($_POST['form_create']) && isset($_GET['path'])) {
+    $conn = getConnection($_SESSION['host'], "meu_db", $_SESSION['user'], $_SESSION['pwd']);
+    
+    // Escapar o nome da tabela para evitar SQL Injection
+    $tableName = pg_escape_identifier($conn, $_GET['path']);
+    
+    $query = "INSERT INTO $tableName (name, email) VALUES ($1, $2)";
+    
+    // Preparar a consulta
+    $stmt = pg_prepare($conn, "insert_data", $query);
+    if (!$stmt) {
+        echo "Error preparing statement: " . pg_last_error($conn);
+        exit;
+    }
+
+    // Executar a consulta com os valores
+    $result = pg_execute($conn, "insert_data", array($_POST['nameInput'], $_POST['emailInput']));
+    if (!$result) {
+        echo "Error executing statement: " . pg_last_error($conn);
+        exit;
+    }
+
+    pg_close($conn);
+}
+
 
 /**
  * BANCO DE DADOS
