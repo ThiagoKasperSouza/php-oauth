@@ -1,7 +1,7 @@
 
 <?php 
-  include './pages/components/nav_dropdown.php'; 
   echo '<main class="d-flex flex-nowrap">';
+  include './pages/components/nav_dropdown.php'; 
   include './pages/components/sidebar_big.php';
   if(isset($_GET['content'])) {
     $action = $_GET['content'];

@@ -1,5 +1,5 @@
 
-<div class="container-fluid" style="padding: 2em">
+<div class="container-fluid p-4">
     <?php 
         if(isset($_GET['path'])) {
             echo  '<h1>'.$_GET['path']. ' list</h1>';

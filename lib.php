@@ -109,6 +109,11 @@ if (isset($_POST['form_create']) && isset($_GET['path'])) {
         echo "Error executing statement: " . pg_last_error($conn);
         exit;
     }
+    echo '<script>
+        alert("Instancia criada com sucesso!");
+    </script>';
+    
+
 
     pg_close($conn);
 }

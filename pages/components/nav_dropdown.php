@@ -6,6 +6,18 @@
 
       <div class="navbar-collapse collapse" id="navbarsExample01" style="">
         <?php include './pages/components/sidebar_items.php' ?>
+        <hr class="my-4">
+        <li class="mb-1">
+          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+            Account
+          </button>
+          <div class="collapse" id="account-collapse" style="">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <li><a href="/settings" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings</a></li>
+              <li><a href="/logout" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Sign out</a></li>
+            </ul>
+          </div>
+        </li>
       </div>
     </div>
 </nav>

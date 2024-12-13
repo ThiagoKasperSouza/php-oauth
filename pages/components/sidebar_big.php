@@ -78,6 +78,7 @@ transition: background-color 0.3s; /* Transição suave */
 @media screen and (max-width: 1200px) {
   .sidebar_big {
     visibility: hidden;
+    position: absolute;
   }
 }
 @media screen and (min-width: 1200px) {
